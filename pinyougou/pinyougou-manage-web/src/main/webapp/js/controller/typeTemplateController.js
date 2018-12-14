@@ -81,6 +81,7 @@ app.controller("typeTemplateController", function ($scope, $controller, typeTemp
 
     //查询规格列表
     $scope.specificationList = {data:[]};//初始化
+    //     findSpecificationList
     $scope.findSpecificationList = function(){
         specificationService.selectOptionList().success(function (response) {
             $scope.specificationList.data = response;

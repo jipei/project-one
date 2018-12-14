@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/brand")
 //@Controller
@@ -136,5 +137,14 @@ public class BrandController {
     public List<TbBrand> findAll(){
         //return brandService.queryAll();
         return brandService.findAll();
+    }
+
+    /**
+     * 查询品牌列表，返回的数据格式符合select2格式
+     * @return
+     */
+    @GetMapping("selectOptionList")
+    public List<Map<String,Object>> selectOptionList(){
+        return brandService.selectOptionList();
     }
 }

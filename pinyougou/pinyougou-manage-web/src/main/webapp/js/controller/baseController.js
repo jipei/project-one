@@ -40,4 +40,18 @@ app.controller("baseController", function ($scope) {
 
     };
 
+    //将一个json数组格式字符串的某个key对应的值串起来显示，使用，分割
+    $scope.jsonToString=function (jsonStr, key) {
+
+        var str="";
+        var jsonArray=JSON.parse(jsonStr);
+        for (var i=0;i<jsonArray.length;i++){
+            if (i>0){
+                str+=",";
+            }
+            str+=jsonArray[i][key];
+        }
+        return str;
+    };
+
 });
