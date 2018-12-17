@@ -188,7 +188,8 @@
 </dependency>
 
     <!-- redis
-缓存 -->             <dependency>
+缓存 -->
+        <dependency>
     <groupId>redis.clients</groupId>
     <artifactId>jedis</artifactId>
     <version>${jedis.version}</version>
@@ -199,7 +200,8 @@
         <version>${spring.data.redis.version}</version>
     </dependency>
 
-    <!-- 文件上传组件 -->             <dependency>
+    <!-- 文件上传组件 -->
+        <dependency>
     <groupId>commons-fileupload</groupId>
     <artifactId>commons-fileupload</artifactId>
     <version>${commons.fileupload.version}</version>

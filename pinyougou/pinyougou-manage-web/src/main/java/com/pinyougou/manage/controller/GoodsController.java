@@ -3,8 +3,10 @@ package com.pinyougou.manage.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.sellergoods.service.GoodsService;
+import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
