@@ -16,4 +16,5 @@ public interface BrandService extends BaseService<TbBrand> {
 
     List<Map<String,Object>> selectOptionList();
 
+    List<Map<String, Object>> selectTemplateList();
 }

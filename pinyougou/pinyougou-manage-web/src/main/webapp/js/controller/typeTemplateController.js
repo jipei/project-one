@@ -79,6 +79,14 @@ app.controller("typeTemplateController", function ($scope, $controller, typeTemp
         });
     };
 
+    //查询类型模板列表T
+    $scope.templateList = {data:[]};//初始化
+    $scope.findemplateList = function(){
+        brandService.selectTemplateList().success(function (response) {
+            $scope.templateList.data = response;
+        });
+    };
+
     //查询规格列表
     $scope.specificationList = {data:[]};//初始化
     //     findSpecificationList

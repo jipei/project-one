@@ -12,14 +12,12 @@ import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.*;
+@Transactional
 @Service(interfaceClass = GoodsService.class)
 public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsService {
 
@@ -48,9 +46,22 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         Example example = new Example(TbGoods.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(goods.get***())){
-            criteria.andLike("***", "%" + goods.get***() + "%");
-        }*/
+
+        //不查询删除商品
+        criteria.andNotEqualTo("isDelete","1");
+
+        //商家限定
+        if(!StringUtils.isEmpty(goods.getSellerId())){
+            criteria.andEqualTo("sellerId", goods.getSellerId());
+        }
+
+        if(!StringUtils.isEmpty(goods.getAuditStatus())){
+            criteria.andLike("auditStatus", goods.getAuditStatus());
+        }
+
+        if(!StringUtils.isEmpty(goods.getGoodsName())){
+            criteria.andLike("goodsName", "%" + goods.getGoodsName() + "%");
+        }
 
         List<TbGoods> list = goodsMapper.selectByExample(example);
         PageInfo<TbGoods> pageInfo = new PageInfo<>(list);
@@ -69,6 +80,84 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         //3、保存商品sku列表信息
         saveItemList(goods);
+    }
+
+    @Override
+    public Goods findGoodsById(Long id) {
+        Goods goods = new Goods();
+        //查询商品SPU
+        TbGoods tbGoods = findOne(id);
+        goods.setGoods(tbGoods);
+
+        //查询商品描述
+        TbGoodsDesc tbGoodsDesc = goodsDescMapper.selectByPrimaryKey(id);
+        goods.setGoodsDesc(tbGoodsDesc);
+
+        //查询商品SKU列表
+        TbItem item = new TbItem();
+        item.setGoodsId(id);
+        List<TbItem> itemList = itemMapper.select(item);
+        goods.setItemList(itemList);
+        return goods;
+    }
+
+    @Override
+    public void updateGoods(Goods goods) {
+        //更新商品基本信息
+        update(goods.getGoods());
+
+        //跟更新商品描述信息
+        goodsDescMapper.updateByPrimaryKeySelective(goods.getGoodsDesc());
+
+        //删除原有的SKU列表
+        TbItem param = new TbItem();
+        param.setGoodsId(goods.getGoods().getId());
+        itemMapper.delete(param);
+
+        //保存商品SKU
+        saveItemList(goods);
+    }
+
+    @Override
+    public void updateStatus(Long[] ids, String status) {
+        //批量更新商品的状态
+        //update tb_goods set audit_status=? where id in(?,...)
+        TbGoods goods = new TbGoods();
+        goods.setAuditStatus(status);
+
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids));
+
+        //批量更新商品的审核状态
+        goodsMapper.updateByExampleSelective(goods,example);
+
+        //如果是审核通过则将SKU设置为启用状态
+        if ("2".equals(status)){
+            //更新的内容
+            //根据商品spu id数组修改对于的sku 的状态为1
+            //update tb_item set status=1 where goods_id in (?,?,,,);
+            TbItem item = new TbItem();
+            item.setStatus("1");
+
+            //更新条件
+            Example itemExample = new Example(TbItem.class);
+            itemExample.createCriteria().andIn("goodsId",Arrays.asList(ids));
+
+            itemMapper.updateByExampleSelective(item,itemExample);
+        }
+    }
+
+    @Override
+    public void deleteGoodsByIds(Long[] ids) {
+        TbGoods goods = new TbGoods();
+        goods.setIsDelete("1");
+
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id",Arrays.asList(ids));
+
+        //批量更新商品的删除状态为删除
+        goodsMapper.updateByExampleSelective(goods,example);
+
     }
 
     /**

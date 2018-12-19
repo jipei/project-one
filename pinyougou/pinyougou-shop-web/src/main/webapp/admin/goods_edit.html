@@ -73,7 +73,7 @@
 		                           	  		<tr>
 		                           	  			<td>
 		                           	  				<select class="form-control" ng-model="entity.goods.category1Id"
-                                                            ng-options="item.id as item.name for item in itemCat1List" >
+                                                            ng-options="item.id as item.name for item in itemCat1List" ng-click="itemCat3List={};entity.goods.typeTemplateId=undefind">
 		                           	  				</select>
 		                              			</td>
 		                              			<td>
@@ -233,10 +233,10 @@
 										            	<input class="form-control" ng-model="item.num" placeholder="库存数量">
 										            </td>
 										            <td>
-										             	<input disabled ng-model="item.status" ng-true-value="1" ng-false-value="0" type="checkbox" >
+										             	<input disabled ng-model="item.status" ng-checked="item.status=='1'" ng-true-value="1" ng-false-value="0" type="checkbox" >
 										            </td>
 										            <td>
-										                <input ng-model="item.isDefault" ng-true-value="1" ng-false-value="0" type="checkbox" >
+										                <input ng-model="item.isDefault" ng-checked="item.isDefault=='1'" ng-true-value="1" ng-false-value="0" type="checkbox" >
 										            </td>
 						                      </tr>
 						                    </tbody>

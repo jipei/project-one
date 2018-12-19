@@ -54,4 +54,10 @@ public class BrandServiceImpl extends BaseServiceImpl<TbBrand>implements BrandSe
     public List<Map<String, Object>> selectOptionList() {
         return brandMapper.selectOptionList();
     }
+
+    @Override
+    public List<Map<String, Object>> selectTemplateList() {
+        return brandMapper.selectTemplateList();
+
+    }
 }

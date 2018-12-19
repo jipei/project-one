@@ -11,4 +11,6 @@ public interface BrandMapper extends Mapper<TbBrand> {
     public List<TbBrand> queryAll();
 
     List<Map<String,Object>> selectOptionList();
+
+    List<Map<String, Object>> selectTemplateList();
 }
