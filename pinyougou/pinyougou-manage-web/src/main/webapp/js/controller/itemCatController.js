@@ -1,4 +1,4 @@
-app.controller("itemCatController", function ($scope, $controller, itemCatService) {
+app.controller("itemCatController", function ($scope, $controller, itemCatService,typeTemplateService) {
 
     //加载baseController控制器并传入1个作用域，与angularJs运行时作用域相同.
     $controller("baseController",{$scope:$scope});
@@ -7,6 +7,7 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
     $scope.findAll = function(){
         itemCatService.findAll().success(function (response) {
             $scope.list = response;
+            $("#typeTemplateId").select2($scope.list.typeId);
         });
     };
 
@@ -19,14 +20,23 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
 
     $scope.save = function () {
         var object;
+        $scope.entity.typeId=$("#typeTemplateId").val();
+        $scope.entity.parentId=$scope.parentId;
+        if ($scope.entity.parentId = {}){
+            $scope.entity.parentId=0;
+        }
         if($scope.entity.id != null){//更新
             object = itemCatService.update($scope.entity);
         } else {//新增
+
             object = itemCatService.add($scope.entity);
         }
         object.success(function (response) {
             if(response.success){
-                $scope.reloadList();
+                $scope.findByParentId($scope.entity.parentId);
+                alert(response.message);
+
+                //$scope.reloadList();
             } else {
                 alert(response.message);
             }
@@ -72,11 +82,15 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
         });
     };
 
-    $scope.grade = 1;//默认1级
-    $scope.selectList = function (grade, entity) {
+    //默认第一级分类
+    $scope.grade=1;
+    $scope.selectList = function (grade, entity) {//获取当前分类的子分类列表
         $scope.grade = grade;
 
-        switch (grade){
+        $scope.parentId = entity.id;//记录父id
+        $scope.parentName = entity.name;
+
+        switch(grade){
             case 1:
                 $scope.entity_1 = null;
                 $scope.entity_2 = null;
@@ -90,6 +104,18 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
         }
 
         $scope.findByParentId(entity.id);
+    };
+
+    $scope.findTypeTemplateList = {data: []};
+    $scope.findTypeTemplateList = function () {
+        typeTemplateService.selectOptionList().success(function (response) {
+            $scope.typeTemplateList = {data:response};
+        });
+    };
+
+    //置空
+    $scope.kong=function () {
+        $scope.entity={};
     }
 
 });

@@ -18,4 +18,6 @@ public interface GoodsService extends BaseService<TbGoods> {
     void updateStatus(Long[] ids, String status);
 
     void deleteGoodsByIds(Long[] ids);
+
+    void updateMarketable(Long[] ids, String marketable);
 }

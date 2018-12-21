@@ -48,10 +48,7 @@ app.service("brandService", function ($http) {
 
     };
 
-    //查询类型模板数据
-    this.selectTemplateList = function () {
-        return $http.get("../brand/selectTemplateList.do");
 
-    };
+
 
 });

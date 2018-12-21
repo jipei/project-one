@@ -104,6 +104,23 @@ public class GoodsController {
     }
 
     //更新商品状态
+    @GetMapping("/updateMarketable")
+    public Result updateMarketable(Long[] ids, String marketable) {
+        try {
+            goodsService.updateMarketable(ids,marketable);
+            if ("1".equals(marketable)){
+                return Result.ok("上架成功");
+            }else {
+                return Result.ok("下架成功");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.fail("更新失败");
+    }
+
+    //更新商品状态
     @GetMapping("/updateStatus")
     public Result updateStatus(Long[] ids, String status) {
         try {

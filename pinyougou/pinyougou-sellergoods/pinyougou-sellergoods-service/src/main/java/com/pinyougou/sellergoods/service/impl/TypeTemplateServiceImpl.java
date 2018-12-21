@@ -59,4 +59,11 @@ public class TypeTemplateServiceImpl extends BaseServiceImpl<TbTypeTemplate> imp
         }
         return specMapList;
     }
+
+    @Override
+    public List<Map<String, Object>> findTypeTemplateList() {
+        return typeTemplateMapper.findTypeTemplateList();
+    }
+
+
 }

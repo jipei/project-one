@@ -12,4 +12,7 @@ public interface TypeTemplateService extends BaseService<TbTypeTemplate> {
     PageResult search(Integer page, Integer rows, TbTypeTemplate typeTemplate);
 
     List<Map> findSpecList(Long id);
+
+
+    List<Map<String, Object>> findTypeTemplateList();
 }

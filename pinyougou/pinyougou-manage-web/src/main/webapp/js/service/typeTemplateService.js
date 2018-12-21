@@ -29,4 +29,10 @@ app.service("typeTemplateService",function ($http) {
         return $http.post("../typeTemplate/search.do?page=" + page + "&rows=" + rows, searchEntity);
 
     };
+    //查询类型模板数据
+    this.selectOptionList = function () {
+        return $http.get("../typeTemplate/findTypeTemplateList.do");
+    };
+
+
 });

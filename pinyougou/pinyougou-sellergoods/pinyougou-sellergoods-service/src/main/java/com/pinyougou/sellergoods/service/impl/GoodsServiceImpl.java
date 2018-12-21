@@ -160,6 +160,20 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     }
 
+    @Override
+    public void updateMarketable(Long[] ids, String marketable) {
+        //批量更新商品的状态
+        //update tb_goods set audit_status=? where id in(?,...)
+        TbGoods goods = new TbGoods();
+        goods.setIsMarketable(marketable);
+
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids));
+
+        //批量更新商品的审核状态
+        goodsMapper.updateByExampleSelective(goods,example);
+    }
+
     /**
      * 保存商品sku列表
      * @param goods 商品信息（基本、描述、sku列表）

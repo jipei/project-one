@@ -11,7 +11,5 @@
         select id ,name as text from tb_brand
     </select>
 
-    <select id="selectTemplateList" resultType="map">
-        select id ,name as text from tb_type_template
-    </select>
+
 </mapper>

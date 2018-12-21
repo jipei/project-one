@@ -143,19 +143,12 @@ public class BrandController {
      * 查询品牌列表，返回的数据格式符合select2格式
      * @return
      */
-    @GetMapping("selectOptionList")
+    @GetMapping("/selectOptionList")
     public List<Map<String,Object>> selectOptionList(){
         return brandService.selectOptionList();
     }
 
 
-    /**
-     * 查询类型模板，返回的数据格式符合select2格式
-     * @return
-     */
-    @GetMapping("selectTemplateList")
-    public List<Map<String,Object>> selectTemplateList(){
-        return brandService.selectTemplateList();
-    }
+
 
 }
