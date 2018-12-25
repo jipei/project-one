@@ -17,6 +17,10 @@
         <module>pinyougou-shop-web</module>
         <module>pinyougou-content</module>
         <module>pinyougou-portal-web</module>
+        <module>pinyougou-solr-import</module>
+        <module>pinyougou-search</module>
+        <module>pinyougou-search-web</module>
+        <module>pinyougou-item-web</module>
     </modules>
 
     <!-- 集中定义依赖版本号 -->     <properties>

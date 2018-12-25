@@ -263,9 +263,11 @@ app.controller("goodsController", function ($scope, $controller, $location, good
         if(confirm("确定要更新选中的商品状态吗？")){
             goodsService.updateStatus($scope.selectedIds, status).success(function (response) {
                 if(response.success) {
+
                     //刷新列表并清空选中的那些商品
                     $scope.reloadList();
                     $scope.selectedIds = [];
+                    alert(response.message);
                 } else {
                     alert(response.message);
                 }

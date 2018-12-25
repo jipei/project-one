@@ -50,6 +50,7 @@ app.controller("itemCatController", function ($scope, $controller, itemCatServic
     };
 
     $scope.delete = function () {
+        alert(JSON.stringify($scope.selectedIds ));
         if($scope.selectedIds.length < 1){
             alert("请先选择要删除的记录");
             return;

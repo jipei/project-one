@@ -2,6 +2,8 @@ package com.pinyougou.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.pinyougou.pojo.TbGoods;
+import com.pinyougou.pojo.TbItem;
+import com.pinyougou.search.service.ItemSearchService;
 import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
@@ -9,6 +11,7 @@ import com.pinyougou.vo.Result;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RequestMapping("/goods")
@@ -17,6 +20,9 @@ public class GoodsController {
 
     @Reference
     private GoodsService goodsService;
+
+    @Reference
+    private ItemSearchService itemSearchService;
 
     @RequestMapping("/findAll")
     public List<TbGoods> findAll() {
@@ -78,6 +84,8 @@ public class GoodsController {
     public Result delete(Long[] ids) {
         try {
             goodsService.deleteGoodsByIds(ids);
+            //删除solr中对应商品索引数据
+            itemSearchService.deleteItemByGoodsIdList(Arrays.asList(ids));
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,14 +109,23 @@ public class GoodsController {
 
     //更新商品状态
     @GetMapping("/updateStatus")
-    public Result updateStatus(Long[] ids, String status) {
+    public Result updateStatus(Long[] ids, String status){
         try {
-            goodsService.updateStatus(ids,status);
-            return Result.ok("更新成功");
+            goodsService.updateStatus(ids, status);
+
+            if ("2".equals(status)) {
+                //如果审核通过则需要更新
+                //根据商品spu id 数组查询已经启用的那些sku商品列表itemList
+                List<TbItem> itemList = goodsService.findItemListByGoodsIdsAndStatus(ids, "1");
+
+                //更新
+                itemSearchService.importItemList(itemList);
+            }
+            return Result.ok("修改商品状态成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Result.fail("更新失败");
+        return Result.fail("修改商品状态失败");
     }
 
 }
