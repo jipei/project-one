@@ -1,6 +1,7 @@
 package com.pinyougou.manage.controller;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.pinyougou.pojo.TbGoods;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
@@ -8,9 +9,15 @@ import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,8 +28,20 @@ public class GoodsController {
     @Reference
     private GoodsService goodsService;
 
-    @Reference
-    private ItemSearchService itemSearchService;
+    @Autowired
+    private JmsTemplate jmsTemplate;
+
+    @Autowired
+    private ActiveMQQueue itemSolrQueue;
+
+    @Autowired
+    private ActiveMQQueue itemSolrDeleteQueue;
+
+    @Autowired
+    private ActiveMQTopic itemTopic;
+
+    @Autowired
+    private ActiveMQTopic itemDeleteTopic;
 
     @RequestMapping("/findAll")
     public List<TbGoods> findAll() {
@@ -85,12 +104,26 @@ public class GoodsController {
         try {
             goodsService.deleteGoodsByIds(ids);
             //删除solr中对应商品索引数据
-            itemSearchService.deleteItemByGoodsIdList(Arrays.asList(ids));
+            sendMQMsg(itemSolrDeleteQueue,ids);
+
+            //发送主题消息
+            sendMQMsg(itemDeleteTopic,ids);
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
         }
         return Result.fail("删除失败");
+    }
+
+    private void sendMQMsg(Destination destination , Long[] ids) throws JMSException{
+        jmsTemplate.send(destination, new MessageCreator() {
+            @Override
+            public Message createMessage(Session session) throws JMSException {
+                ObjectMessage objectMessage = session.createObjectMessage();
+                objectMessage.setObject(ids);
+                return objectMessage;
+            }
+        });
     }
 
     /**
@@ -117,9 +150,15 @@ public class GoodsController {
                 //如果审核通过则需要更新
                 //根据商品spu id 数组查询已经启用的那些sku商品列表itemList
                 List<TbItem> itemList = goodsService.findItemListByGoodsIdsAndStatus(ids, "1");
-
-                //更新
-                itemSearchService.importItemList(itemList);
+                jmsTemplate.send(itemSolrQueue, new MessageCreator() {
+                    @Override
+                    public Message createMessage(Session session) throws JMSException {
+                        TextMessage textMessage = session.createTextMessage();
+                        textMessage.setText(JSON.toJSONString(itemList));
+                        return textMessage;
+                    }
+                });
+                sendMQMsg(itemTopic,ids);
             }
             return Result.ok("修改商品状态成功");
         } catch (Exception e) {
