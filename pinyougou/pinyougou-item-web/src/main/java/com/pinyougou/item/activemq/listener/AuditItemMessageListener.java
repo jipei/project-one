@@ -19,11 +19,12 @@ import javax.jms.Session;
 import java.io.FileWriter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 根据商品spu id 数组生成商品详情静态页面
  */
-public class AuditMessageListener extends AbstractAdaptableMessageListener {
+public class AuditItemMessageListener extends AbstractAdaptableMessageListener {
 
     @Autowired
     private FreeMarkerConfigurer freeMarkerConfigurer;
@@ -36,6 +37,8 @@ public class AuditMessageListener extends AbstractAdaptableMessageListener {
 
     @Reference
     private ItemCatService itemCatService;
+
+
 
     @Override
     public void onMessage(Message message, Session session) throws JMSException {
@@ -51,6 +54,11 @@ public class AuditMessageListener extends AbstractAdaptableMessageListener {
         }
     }
 
+    /**
+     * 根据商品spu id查询商品基本、描述、sku列表
+     * 并加载商品1、2、3级上坡分类中文名称结合Freemarker模板生成html静态额面到指定路径
+     * @param goodsId 商品spu id
+     */
     private void genHtml(Long goodsId) {
         try {
             //获取模板
@@ -58,7 +66,7 @@ public class AuditMessageListener extends AbstractAdaptableMessageListener {
             Template template = configuration.getTemplate("item.ftl");
 
             //获取数据
-            HashMap<String, Object> dataModel = new HashMap<>();
+            Map<String, Object> dataModel = new HashMap<>();
             //据商品的spu id 查询商品信息（基本、描述、已启用的sku列表）
             Goods goods = goodsService.findGoodsByGoodsIdAndStatus(goodsId, "1");
 
@@ -68,7 +76,7 @@ public class AuditMessageListener extends AbstractAdaptableMessageListener {
             dataModel.put("goodsDesc",goods.getGoodsDesc());
             //itemList 商品sku列表
             dataModel.put("itemList",goods.getItemList());
-            //itemList 1级商品分类中文名称
+            //itemCat1 1级商品分类中文名称
             TbItemCat itemCat1 = itemCatService.findOne(goods.getGoods().getCategory1Id());
             dataModel.put("itemCat1",itemCat1.getName());
             //itemCat2 2级商品分类中文名称

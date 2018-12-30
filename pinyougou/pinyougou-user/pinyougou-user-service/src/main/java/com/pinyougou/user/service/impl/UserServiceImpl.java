@@ -62,7 +62,11 @@ public class UserServiceImpl extends BaseServiceImpl<TbUser> implements UserServ
     @Override
     public void sendSmsCode(String phone) {
         //1.生成随机数6位；
-        String code = (long) (Math.random() * 1000000) + "";
+        double random = Math.random();
+        if (random<0.1){
+            random+=0.1;
+        }
+        String code = (long) (random * 1000000) + "";
 
         System.out.println("验证码位："+code);
 

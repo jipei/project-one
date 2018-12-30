@@ -27,5 +27,6 @@ public class ItemMessageListener extends AbstractAdaptableMessageListener {
         List<TbItem> itemList = JSONArray.parseArray(textMessage.getText(), TbItem.class);
         //2.同步solr数据
         itemSearchService.importItemList(itemList);
+        System.out.println("同步索引库数据完成。");
     }
 }
