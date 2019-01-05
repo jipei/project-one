@@ -1,6 +1,5 @@
 package com.pinyougou.cart.controller;
 
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONArray;
 import com.pinyougou.cart.service.CartService;
@@ -10,6 +9,7 @@ import com.pinyougou.vo.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,9 +46,15 @@ public class CartController {
      * @return 操作结果
      */
     @GetMapping("/addItemToCartList")
+   @CrossOrigin(origins = "http://item.pinyougou.com", allowCredentials = "true")
     public Result addItemToCartList(Long itemId, Integer num){
         Result result=Result.fail("加入购物车失败");
         try {
+            //设置允许跨域请求的域名
+            //response.setHeader("Access-Control-Allow-Origin","http:item.pinyougou.com");
+            //允许读取或获取cookie中的信息
+            //response.setHeader("Access-Control-Allow-Credentials","true");
+
             //判断用户是否已经登陆
             //1.获取购物车列表；
             List<Cart> cartList=findCartList();
@@ -120,3 +126,6 @@ public class CartController {
     }
 
 }
+
+
+

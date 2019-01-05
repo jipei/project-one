@@ -97,7 +97,7 @@
                         </div>
                         <div class="fl price">
                             <i>¥</i>
-                            <em>${goods.price}</em>
+                            <em>{{sku.price}}</em>
                             <span>降价通知</span>
                         </div>
                         <div class="fr remark">
