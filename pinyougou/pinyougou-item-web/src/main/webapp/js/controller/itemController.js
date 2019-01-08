@@ -68,7 +68,6 @@ app.controller("itemController", function ($scope, $http) {
         $http.get("http://cart.pinyougou.com/cart/addItemToCartList.do?itemId="
             + $scope.sku.id + "&num=" + $scope.num,{"withCredentials":true})
             .success(function (response) {
-                alert("1")
                 if (response.success) {
                     location.href = "http://cart.pinyougou.com";
                 } else {

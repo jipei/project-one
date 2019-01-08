@@ -18,4 +18,11 @@ public interface WeixinPayService {
      * @return 操作结果（二维码链接地址code_url、交易订单号、本次支付的总金额totalFee、result_code业务结果（SUCCESS表示成功））
      */
     Map<String, String> createNative(String outTradeNo, String totalFee);
+
+    /**
+     * 根据订单号关闭在微信支付系统的订单
+     * @param outTradeNo 订单号
+     * @return 操作结果
+     */
+    Map<String, String> closeOrder(String outTradeNo);
 }
